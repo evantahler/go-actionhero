@@ -18,22 +18,22 @@ linters-settings:
   unused:
     check-exported: false
 
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
 linters:
   enable:
     - errcheck
     - goconst
-    - gofmt
-    - goimports
-    - golint
     - govet
     - ineffassign
     - misspell
+    - predeclared
     - revive
-    - shadow
     - staticcheck
-    - typecheck
     - unused
-    - vet
 
 issues:
   exclude-rules:
