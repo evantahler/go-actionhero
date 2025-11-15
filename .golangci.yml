@@ -1,0 +1,46 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+  govet:
+    check-shadowing: true
+  misspell:
+    locale: US
+  revive:
+    min-confidence: 0.8
+  unused:
+    check-exported: false
+
+linters:
+  enable:
+    - errcheck
+    - goconst
+    - gofmt
+    - goimports
+    - golint
+    - govet
+    - ineffassign
+    - misspell
+    - revive
+    - staticcheck
+    - typecheck
+    - unused
+    - vet
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - errcheck
+        - goconst
+        - gosec
+        - noctx
+        - unparam
