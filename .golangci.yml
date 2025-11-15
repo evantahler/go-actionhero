@@ -9,8 +9,6 @@ linters-settings:
   goconst:
     min-len: 2
     min-occurrences: 2
-  govet:
-    check-shadowing: true
   misspell:
     locale: US
   revive:
@@ -29,6 +27,7 @@ linters:
     - ineffassign
     - misspell
     - revive
+    - shadow
     - staticcheck
     - typecheck
     - unused
