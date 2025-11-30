@@ -97,28 +97,10 @@ All settings use the `ACTIONHERO_` prefix when set as environment variables. For
 
 See `.env.example` for all available configuration options.
 
-## Progress
-
-### ✅ Completed (Phase 1)
-- Project structure
-- Core interfaces (Action, Connection, Server, Middleware)
-- API singleton with initialization lifecycle
-- Initializer interface for plugin-like architecture
-- Typed error system
-- Configuration system (with .env file support)
-- Structured logger (logrus)
-- CLI entry point with welcome message
-- Makefile for build, test, and lint
-- GitHub Actions CI/CD
-- Comprehensive tests
-
-### 📋 Planned
-- HTTP server
-- WebSocket server
-- Database integration
-- Session management
-- Background jobs
-- Full CLI command support (action execution, etc.)
+## How we develop
+1. Tasks are in @tasks.md
+2. ALWAYS use TDD (test driven development)
+3. Always run all tests and linter after any changes
 
 ## License
 

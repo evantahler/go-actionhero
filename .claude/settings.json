@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go test:*)",
+      "Bash(go build:*)",
+      "Bash(./actionhero)",
+      "Bash(./actionhero:*)",
+      "Bash(make lint:*)",
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "make format && make lint"
+          }
+        ]
+      }
+    ]
+  }
+}
