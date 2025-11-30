@@ -29,11 +29,11 @@ var rootCmd = &cobra.Command{
 	Long: `Go ActionHero is a transport-agnostic API framework for building
 scalable APIs with support for HTTP, WebSocket, and CLI transports.`,
 	PersistentPreRunE: loadConfigAndInitLogger,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		// Disable timestamps for help command
 		disableTimestampsForCommand()
 		showWelcome()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -42,7 +42,7 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start the ActionHero server",
 	Long:  `Start the ActionHero server and begin accepting connections.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		logger.Info("  Starting ActionHero server...")
 		// TODO: Start the server
 		logger.Warn("  Server start not yet implemented")
@@ -54,7 +54,7 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Display current configuration",
 	Long:  `Display the current application configuration in a formatted way.`,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRun: func(cmd *cobra.Command, _ []string) {
 		// Disable timestamps for config command
 		disableTimestampsForCommand()
 		// Skip welcome message for JSON output
@@ -63,7 +63,7 @@ var configCmd = &cobra.Command{
 			showWelcome()
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		format, _ := cmd.Flags().GetString("format")
 		dumpConfig(cfg, logger, format)
 	},
@@ -85,13 +85,13 @@ func init() {
 
 // loadConfigAndInitLogger loads configuration and initializes the logger
 // This runs before any command execution
-func loadConfigAndInitLogger(cmd *cobra.Command, args []string) error {
+func loadConfigAndInitLogger(_ *cobra.Command, _ []string) error {
 	var err error
 
 	// Load configuration
 	cfg, err = config.Load()
 	if err != nil {
-		color.New(color.FgRed).Fprintf(os.Stderr, "Error loading configuration: %v\n", err)
+		_, _ = color.New(color.FgRed).Fprintf(os.Stderr, "Error loading configuration: %v\n", err)
 		os.Exit(1)
 	}
 

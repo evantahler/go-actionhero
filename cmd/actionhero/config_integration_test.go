@@ -91,15 +91,15 @@ func TestConfigCommand_Integration(t *testing.T) {
 			originalEnv := make(map[string]string)
 			for key, value := range tt.env {
 				originalEnv[key] = os.Getenv(key)
-				os.Setenv(key, value)
+				_ = os.Setenv(key, value)
 			}
 			defer func() {
 				// Restore original environment
 				for key, originalValue := range originalEnv {
 					if originalValue == "" {
-						os.Unsetenv(key)
+						_ = os.Unsetenv(key)
 					} else {
-						os.Setenv(key, originalValue)
+						_ = os.Setenv(key, originalValue)
 					}
 				}
 			}()

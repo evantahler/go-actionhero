@@ -21,7 +21,7 @@ func (m *mockAction) Inputs() interface{}      { return nil }
 func (m *mockAction) Middleware() []Middleware { return nil }
 func (m *mockAction) Web() *WebConfig          { return nil }
 func (m *mockAction) Task() *TaskConfig        { return nil }
-func (m *mockAction) Run(ctx context.Context, params interface{}, conn *Connection) (interface{}, error) {
+func (m *mockAction) Run(_ context.Context, _ interface{}, _ *Connection) (interface{}, error) {
 	return nil, nil
 }
 
@@ -77,7 +77,7 @@ type mockInitializer struct {
 func (m *mockInitializer) Name() string  { return m.name }
 func (m *mockInitializer) Priority() int { return m.priority }
 
-func (m *mockInitializer) Initialize(api *API) error {
+func (m *mockInitializer) Initialize(_ *API) error {
 	m.initializeCalled = true
 	if m.shouldFailInit {
 		return errors.New("init failed")
@@ -85,7 +85,7 @@ func (m *mockInitializer) Initialize(api *API) error {
 	return nil
 }
 
-func (m *mockInitializer) Start(api *API) error {
+func (m *mockInitializer) Start(_ *API) error {
 	m.startCalled = true
 	if m.shouldFailStart {
 		return errors.New("start failed")
@@ -93,7 +93,7 @@ func (m *mockInitializer) Start(api *API) error {
 	return nil
 }
 
-func (m *mockInitializer) Stop(api *API) error {
+func (m *mockInitializer) Stop(_ *API) error {
 	m.stopCalled = true
 	if m.shouldFailStop {
 		return errors.New("stop failed")
@@ -167,8 +167,8 @@ func TestGetActions(t *testing.T) {
 	action1 := &mockAction{name: "action:one"}
 	action2 := &mockAction{name: "action:two"}
 
-	api.RegisterAction(action1)
-	api.RegisterAction(action2)
+	_ = api.RegisterAction(action1)
+	_ = api.RegisterAction(action2)
 
 	actions := api.GetActions()
 	if len(actions) != 2 {
@@ -320,20 +320,20 @@ func TestStartWithoutInitialize(t *testing.T) {
 		t.Error("Expected API to be running")
 	}
 
-	api.Stop()
+	_ = api.Stop()
 }
 
 func TestDoubleStart(t *testing.T) {
 	api := New(&config.Config{}, util.NewLogger(config.DefaultLoggerConfig()))
 
-	api.Start()
+	_ = api.Start()
 
 	err := api.Start()
 	if err == nil {
 		t.Error("Expected error when starting already running API")
 	}
 
-	api.Stop()
+	_ = api.Stop()
 }
 
 func TestStopNotRunning(t *testing.T) {
@@ -354,8 +354,8 @@ func TestContext(t *testing.T) {
 	}
 
 	// Start and stop API
-	api.Start()
-	api.Stop()
+	_ = api.Start()
+	_ = api.Stop()
 
 	// Check that context was cancelled
 	select {

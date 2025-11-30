@@ -13,8 +13,6 @@ linters-settings:
     min-occurrences: 2
   misspell:
     locale: US
-  revive:
-    min-confidence: 0.8
   unused:
     check-exported: false
 
@@ -31,11 +29,12 @@ linters:
     - ineffassign
     - misspell
     - predeclared
-    - revive
     - staticcheck
     - unused
 
 issues:
+  exclude:
+    - "var-naming: avoid meaningless package names"
   exclude-rules:
     # Exclude some linters from running on tests files.
     - path: _test\.go

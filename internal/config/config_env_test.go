@@ -18,7 +18,7 @@ ACTIONHERO_SERVER_WEB_PORT=9999
 	if err != nil {
 		t.Fatalf("Failed to create test .env file: %v", err)
 	}
-	defer os.Remove(envFile)
+	defer func() { _ = os.Remove(envFile) }()
 
 	// Clear environment first
 	os.Clearenv()
@@ -29,7 +29,7 @@ ACTIONHERO_SERVER_WEB_PORT=9999
 	if err != nil {
 		t.Fatalf("Failed to create .env file: %v", err)
 	}
-	defer os.Remove(envFile2)
+	defer func() { _ = os.Remove(envFile2) }()
 
 	// Clear environment and reload
 	os.Clearenv()
@@ -63,12 +63,12 @@ ACTIONHERO_LOGGER_LEVEL=info
 	if err != nil {
 		t.Fatalf("Failed to create .env file: %v", err)
 	}
-	defer os.Remove(envFile)
+	defer func() { _ = os.Remove(envFile) }()
 
 	// Set environment variable (should override .env file)
 	os.Clearenv()
-	os.Setenv("ACTIONHERO_PROCESS_NAME", "from-env-var")
-	defer os.Unsetenv("ACTIONHERO_PROCESS_NAME")
+	_ = os.Setenv("ACTIONHERO_PROCESS_NAME", "from-env-var")
+	defer func() { _ = os.Unsetenv("ACTIONHERO_PROCESS_NAME") }()
 
 	cfg, err := Load()
 	if err != nil {
@@ -86,10 +86,10 @@ func TestLoad_EnvFileNotFound(t *testing.T) {
 	os.Clearenv()
 
 	// Remove .env if it exists
-	os.Remove(".env")
-	os.Remove(".env.local")
-	os.Remove(".env.test")
-	os.Remove(".env.dev")
+	_ = os.Remove(".env")
+	_ = os.Remove(".env.local")
+	_ = os.Remove(".env.test")
+	_ = os.Remove(".env.dev")
 
 	// Should still load successfully with defaults
 	cfg, err := Load()

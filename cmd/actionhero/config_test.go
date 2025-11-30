@@ -103,13 +103,13 @@ func TestDumpConfig_WithEnvOverrides(t *testing.T) {
 	color.NoColor = true
 
 	// Set environment variables
-	os.Setenv("ACTIONHERO_PROCESS_NAME", "test-app")
-	os.Setenv("ACTIONHERO_LOGGER_LEVEL", "debug")
-	os.Setenv("ACTIONHERO_SERVER_WEB_PORT", "9000")
+	_ = os.Setenv("ACTIONHERO_PROCESS_NAME", "test-app")
+	_ = os.Setenv("ACTIONHERO_LOGGER_LEVEL", "debug")
+	_ = os.Setenv("ACTIONHERO_SERVER_WEB_PORT", "9000")
 	defer func() {
-		os.Unsetenv("ACTIONHERO_PROCESS_NAME")
-		os.Unsetenv("ACTIONHERO_LOGGER_LEVEL")
-		os.Unsetenv("ACTIONHERO_SERVER_WEB_PORT")
+		_ = os.Unsetenv("ACTIONHERO_PROCESS_NAME")
+		_ = os.Unsetenv("ACTIONHERO_LOGGER_LEVEL")
+		_ = os.Unsetenv("ACTIONHERO_SERVER_WEB_PORT")
 	}()
 
 	// Load config

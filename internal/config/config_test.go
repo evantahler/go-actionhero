@@ -5,6 +5,10 @@ import (
 	"testing"
 )
 
+const (
+	defaultProcessName = "actionhero"
+)
+
 func TestLoad_Defaults(t *testing.T) {
 	// Clear environment
 	os.Clearenv()
@@ -14,8 +18,8 @@ func TestLoad_Defaults(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if cfg.Process.Name != "actionhero" {
-		t.Errorf("Expected process name 'actionhero', got %v", cfg.Process.Name)
+	if cfg.Process.Name != defaultProcessName {
+		t.Errorf("Expected process name '%s', got %v", defaultProcessName, cfg.Process.Name)
 	}
 
 	if cfg.Logger.Level != "info" {
@@ -36,15 +40,15 @@ func TestLoad_EnvironmentVariables(t *testing.T) {
 	os.Clearenv()
 
 	// Set environment variables
-	os.Setenv("ACTIONHERO_PROCESS_NAME", "test-app")
-	os.Setenv("ACTIONHERO_LOGGER_LEVEL", "debug")
-	os.Setenv("ACTIONHERO_DATABASE_HOST", "db.example.com")
-	os.Setenv("ACTIONHERO_SERVER_WEB_PORT", "9000")
+	_ = os.Setenv("ACTIONHERO_PROCESS_NAME", "test-app")
+	_ = os.Setenv("ACTIONHERO_LOGGER_LEVEL", "debug")
+	_ = os.Setenv("ACTIONHERO_DATABASE_HOST", "db.example.com")
+	_ = os.Setenv("ACTIONHERO_SERVER_WEB_PORT", "9000")
 	defer func() {
-		os.Unsetenv("ACTIONHERO_PROCESS_NAME")
-		os.Unsetenv("ACTIONHERO_LOGGER_LEVEL")
-		os.Unsetenv("ACTIONHERO_DATABASE_HOST")
-		os.Unsetenv("ACTIONHERO_SERVER_WEB_PORT")
+		_ = os.Unsetenv("ACTIONHERO_PROCESS_NAME")
+		_ = os.Unsetenv("ACTIONHERO_LOGGER_LEVEL")
+		_ = os.Unsetenv("ACTIONHERO_DATABASE_HOST")
+		_ = os.Unsetenv("ACTIONHERO_SERVER_WEB_PORT")
 	}()
 
 	cfg, err := Load()
@@ -78,8 +82,8 @@ func TestDefaultConfigs(t *testing.T) {
 			name: "ProcessConfig",
 			test: func(t *testing.T) {
 				cfg := DefaultProcessConfig()
-				if cfg.Name != "actionhero" {
-					t.Errorf("Expected name 'actionhero', got %v", cfg.Name)
+				if cfg.Name != defaultProcessName {
+					t.Errorf("Expected name '%s', got %v", defaultProcessName, cfg.Name)
 				}
 			},
 		},
@@ -123,8 +127,8 @@ func TestDefaultConfigs(t *testing.T) {
 			name: "SessionConfig",
 			test: func(t *testing.T) {
 				cfg := DefaultSessionConfig()
-				if cfg.CookieName != "actionhero" {
-					t.Errorf("Expected cookie name 'actionhero', got %v", cfg.CookieName)
+				if cfg.CookieName != defaultProcessName {
+					t.Errorf("Expected cookie name '%s', got %v", defaultProcessName, cfg.CookieName)
 				}
 				if cfg.TTL != 86400 {
 					t.Errorf("Expected TTL 86400, got %v", cfg.TTL)

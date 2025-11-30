@@ -1,3 +1,4 @@
+// Package config provides configuration management for ActionHero
 package config
 
 import (

@@ -1,3 +1,4 @@
+// Package main provides the CLI entry point for ActionHero
 package main
 
 import (
@@ -10,16 +11,21 @@ import (
 	"github.com/fatih/color"
 )
 
+const (
+	formatJSON = "json"
+	formatList = "list"
+)
+
 // dumpConfig displays the current configuration in a formatted way
 func dumpConfig(cfg *config.Config, logger *util.Logger, format string) {
 	// Validate format
-	if format != "list" && format != "json" {
+	if format != formatList && format != formatJSON {
 		logger.Errorf("  Invalid format '%s'. Use 'list' or 'json'", format)
 		return
 	}
 
 	switch format {
-	case "json":
+	case formatJSON:
 		dumpConfigJSON(cfg, logger)
 	default:
 		dumpConfigList(cfg, logger)

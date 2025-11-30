@@ -1,3 +1,4 @@
+// Package util provides utility functions and types for ActionHero
 package util
 
 import (
@@ -9,22 +10,31 @@ import (
 // ErrorType represents different types of errors in the system
 type ErrorType string
 
+// Error type constants for different categories of errors
 const (
-	// Connection errors
-	ErrorTypeConnectionActionNotFound        ErrorType = "CONNECTION_ACTION_NOT_FOUND"
-	ErrorTypeConnectionActionRun             ErrorType = "CONNECTION_ACTION_RUN"
-	ErrorTypeConnectionActionParamRequired   ErrorType = "CONNECTION_ACTION_PARAM_REQUIRED"
+	// ErrorTypeConnectionActionNotFound occurs when a requested action cannot be found
+	ErrorTypeConnectionActionNotFound ErrorType = "CONNECTION_ACTION_NOT_FOUND"
+	// ErrorTypeConnectionActionRun occurs when an action fails during execution
+	ErrorTypeConnectionActionRun ErrorType = "CONNECTION_ACTION_RUN"
+	// ErrorTypeConnectionActionParamRequired occurs when a required parameter is missing
+	ErrorTypeConnectionActionParamRequired ErrorType = "CONNECTION_ACTION_PARAM_REQUIRED"
+	// ErrorTypeConnectionActionParamValidation occurs when parameter validation fails
 	ErrorTypeConnectionActionParamValidation ErrorType = "CONNECTION_ACTION_PARAM_VALIDATION"
-	ErrorTypeConnectionSessionNotFound       ErrorType = "CONNECTION_SESSION_NOT_FOUND"
-	ErrorTypeConnectionNotSubscribed         ErrorType = "CONNECTION_NOT_SUBSCRIBED"
-	ErrorTypeConnectionTypeNotFound          ErrorType = "CONNECTION_TYPE_NOT_FOUND"
+	// ErrorTypeConnectionSessionNotFound occurs when a session cannot be found
+	ErrorTypeConnectionSessionNotFound ErrorType = "CONNECTION_SESSION_NOT_FOUND"
+	// ErrorTypeConnectionNotSubscribed occurs when a connection is not subscribed to a channel
+	ErrorTypeConnectionNotSubscribed ErrorType = "CONNECTION_NOT_SUBSCRIBED"
+	// ErrorTypeConnectionTypeNotFound occurs when a connection type is not recognized
+	ErrorTypeConnectionTypeNotFound ErrorType = "CONNECTION_TYPE_NOT_FOUND"
 
-	// Server errors
+	// ErrorTypeServerInitialization occurs when server initialization fails
 	ErrorTypeServerInitialization ErrorType = "SERVER_INITIALIZATION"
-	ErrorTypeServerStart          ErrorType = "SERVER_START"
-	ErrorTypeServerStop           ErrorType = "SERVER_STOP"
+	// ErrorTypeServerStart occurs when server start fails
+	ErrorTypeServerStart ErrorType = "SERVER_START"
+	// ErrorTypeServerStop occurs when server stop fails
+	ErrorTypeServerStop ErrorType = "SERVER_STOP"
 
-	// Action errors
+	// ErrorTypeActionValidation occurs when action validation fails
 	ErrorTypeActionValidation ErrorType = "ACTION_VALIDATION"
 )
 

@@ -1,3 +1,4 @@
+// Package api provides the core API framework types and interfaces for ActionHero
 package api
 
 import (
@@ -7,6 +8,7 @@ import (
 // HTTPMethod represents HTTP methods
 type HTTPMethod string
 
+// HTTP method constants
 const (
 	HTTPMethodGET     HTTPMethod = "GET"
 	HTTPMethodPOST    HTTPMethod = "POST"
