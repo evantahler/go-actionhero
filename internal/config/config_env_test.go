@@ -12,7 +12,7 @@ ACTIONHERO_LOGGER_LEVEL=debug
 ACTIONHERO_DATABASE_HOST=db.from.env
 ACTIONHERO_SERVER_WEB_PORT=9999
 `
-	
+
 	envFile := ".env.test"
 	err := os.WriteFile(envFile, []byte(envContent), 0644)
 	if err != nil {
@@ -22,7 +22,7 @@ ACTIONHERO_SERVER_WEB_PORT=9999
 
 	// Clear environment first
 	os.Clearenv()
-	
+
 	// Create .env file
 	envFile2 := ".env"
 	err = os.WriteFile(envFile2, []byte(envContent), 0644)
@@ -84,7 +84,7 @@ ACTIONHERO_LOGGER_LEVEL=info
 func TestLoad_EnvFileNotFound(t *testing.T) {
 	// Clear environment and ensure .env doesn't exist
 	os.Clearenv()
-	
+
 	// Remove .env if it exists
 	os.Remove(".env")
 	os.Remove(".env.local")
@@ -102,4 +102,3 @@ func TestLoad_EnvFileNotFound(t *testing.T) {
 		t.Errorf("Expected default process name 'actionhero', got %v", cfg.Process.Name)
 	}
 }
-

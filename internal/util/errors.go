@@ -11,13 +11,13 @@ type ErrorType string
 
 const (
 	// Connection errors
-	ErrorTypeConnectionActionNotFound      ErrorType = "CONNECTION_ACTION_NOT_FOUND"
-	ErrorTypeConnectionActionRun           ErrorType = "CONNECTION_ACTION_RUN"
-	ErrorTypeConnectionActionParamRequired ErrorType = "CONNECTION_ACTION_PARAM_REQUIRED"
+	ErrorTypeConnectionActionNotFound        ErrorType = "CONNECTION_ACTION_NOT_FOUND"
+	ErrorTypeConnectionActionRun             ErrorType = "CONNECTION_ACTION_RUN"
+	ErrorTypeConnectionActionParamRequired   ErrorType = "CONNECTION_ACTION_PARAM_REQUIRED"
 	ErrorTypeConnectionActionParamValidation ErrorType = "CONNECTION_ACTION_PARAM_VALIDATION"
-	ErrorTypeConnectionSessionNotFound     ErrorType = "CONNECTION_SESSION_NOT_FOUND"
-	ErrorTypeConnectionNotSubscribed        ErrorType = "CONNECTION_NOT_SUBSCRIBED"
-	ErrorTypeConnectionTypeNotFound         ErrorType = "CONNECTION_TYPE_NOT_FOUND"
+	ErrorTypeConnectionSessionNotFound       ErrorType = "CONNECTION_SESSION_NOT_FOUND"
+	ErrorTypeConnectionNotSubscribed         ErrorType = "CONNECTION_NOT_SUBSCRIBED"
+	ErrorTypeConnectionTypeNotFound          ErrorType = "CONNECTION_TYPE_NOT_FOUND"
 
 	// Server errors
 	ErrorTypeServerInitialization ErrorType = "SERVER_INITIALIZATION"
@@ -30,11 +30,11 @@ const (
 
 // TypedError represents an error with a specific type and optional metadata
 type TypedError struct {
-	Message      string
-	Type         ErrorType
-	Key          string
-	Value        interface{}
-	Stack        string
+	Message       string
+	Type          ErrorType
+	Key           string
+	Value         interface{}
+	Stack         string
 	OriginalError error
 }
 
@@ -90,11 +90,10 @@ func getStackTrace() string {
 	buf := make([]byte, 4096)
 	n := runtime.Stack(buf, false)
 	lines := strings.Split(string(buf[:n]), "\n")
-	
+
 	// Skip the first line (goroutine info) and return the rest
 	if len(lines) > 1 {
 		return strings.Join(lines[1:], "\n")
 	}
 	return ""
 }
-

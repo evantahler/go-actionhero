@@ -49,21 +49,36 @@ git clone https://github.com/evantahler/go-actionhero.git
 cd go-actionhero
 
 # Install dependencies
-go mod download
+make install
 
 # Configure environment (optional)
 cp .env.example .env
 # Edit .env with your settings
 
+# Build the binary
+make build
+
 # Run tests
-go test ./...
+make test
 
-# Run the server (use ./cmd/actionhero to include all files in the package)
-go run ./cmd/actionhero start
-
-# Or build and run
-go build -o actionhero ./cmd/actionhero
+# Run the server
 ./actionhero start
+```
+
+### Available Make Targets
+
+```bash
+make help           # Display all available targets
+make build          # Build the binary
+make clean          # Remove build artifacts
+make test           # Run tests
+make test-coverage  # Run tests with coverage report
+make lint           # Run golangci-lint
+make fmt            # Format Go code
+make vet            # Run go vet
+make install        # Install dependencies
+make dev            # Build and run the server
+make check          # Run all checks (format, vet, lint, test)
 ```
 
 ### Configuration
@@ -84,14 +99,18 @@ See `.env.example` for all available configuration options.
 
 ## Progress
 
-### ✅ Completed
+### ✅ Completed (Phase 1)
 - Project structure
 - Core interfaces (Action, Connection, Server, Middleware)
+- API singleton with initialization lifecycle
+- Initializer interface for plugin-like architecture
 - Typed error system
 - Configuration system (with .env file support)
 - Structured logger (logrus)
 - CLI entry point with welcome message
-- Basic tests
+- Makefile for build, test, and lint
+- GitHub Actions CI/CD
+- Comprehensive tests
 
 ### 📋 Planned
 - HTTP server

@@ -17,4 +17,3 @@ func DefaultRedisConfig() RedisConfig {
 		DB:       0,
 	}
 }
-

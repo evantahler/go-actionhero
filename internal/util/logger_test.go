@@ -173,4 +173,3 @@ func TestDefaultLoggerConfig(t *testing.T) {
 		t.Error("Expected default timestamp to be true")
 	}
 }
-

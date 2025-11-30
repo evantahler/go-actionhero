@@ -8,14 +8,14 @@ import (
 
 func TestTypedError_Error(t *testing.T) {
 	tests := []struct {
-		name    string
-		err     *TypedError
-		want    string
+		name     string
+		err      *TypedError
+		want     string
 		contains []string
 	}{
 		{
-			name: "simple error",
-			err:  NewTypedError(ErrorTypeActionValidation, "test error"),
+			name:     "simple error",
+			err:      NewTypedError(ErrorTypeActionValidation, "test error"),
 			contains: []string{"ACTION_VALIDATION", "test error"},
 		},
 		{
@@ -53,7 +53,7 @@ func TestTypedError_Error(t *testing.T) {
 
 func TestNewTypedError(t *testing.T) {
 	err := NewTypedError(ErrorTypeActionValidation, "test message")
-	
+
 	if err.Type != ErrorTypeActionValidation {
 		t.Errorf("Expected type %v, got %v", ErrorTypeActionValidation, err.Type)
 	}
@@ -87,7 +87,6 @@ func TestTypedError_WithOptions(t *testing.T) {
 }
 
 func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 || 
+	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
 		strings.Contains(s, substr))
 }
-

@@ -21,4 +21,3 @@ func DefaultTasksConfig() TasksConfig {
 		RetryStuckJobs:     false,
 	}
 }
-

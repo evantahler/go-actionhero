@@ -14,4 +14,3 @@ type Server interface {
 	// Stop stops the server gracefully
 	Stop() error
 }
-

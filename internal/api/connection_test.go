@@ -43,10 +43,10 @@ func TestConnection_Unsubscribe(t *testing.T) {
 func TestConnection_SetSession(t *testing.T) {
 	conn := NewConnection("web", "127.0.0.1", "test-id", nil)
 	session := &SessionData{
-		ID:        "session-id",
+		ID:         "session-id",
 		CookieName: "session",
-		CreatedAt: 1234567890,
-		Data:      make(map[string]interface{}),
+		CreatedAt:  1234567890,
+		Data:       make(map[string]interface{}),
 	}
 
 	conn.SetSession(session)
@@ -58,4 +58,3 @@ func TestConnection_SetSession(t *testing.T) {
 		t.Error("Expected session to be marked as loaded")
 	}
 }
-

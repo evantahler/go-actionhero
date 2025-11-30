@@ -18,23 +18,23 @@ type API struct {
 	Logger *util.Logger
 
 	// Actions registry
-	actions map[string]Action
+	actions   map[string]Action
 	actionsMu sync.RWMutex
 
 	// Servers
-	servers []Server
+	servers   []Server
 	serversMu sync.RWMutex
 
 	// Initializers
-	initializers []Initializer
+	initializers   []Initializer
 	initializersMu sync.RWMutex
 
 	// Lifecycle state
 	running bool
-	mu sync.RWMutex
+	mu      sync.RWMutex
 
 	// Context for graceful shutdown
-	ctx context.Context
+	ctx    context.Context
 	cancel context.CancelFunc
 }
 

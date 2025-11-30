@@ -15,25 +15,25 @@ type mockAction struct {
 	description string
 }
 
-func (m *mockAction) Name() string                                                             { return m.name }
-func (m *mockAction) Description() string                                                      { return m.description }
-func (m *mockAction) Inputs() interface{}                                                      { return nil }
-func (m *mockAction) Middleware() []Middleware                                                 { return nil }
-func (m *mockAction) Web() *WebConfig                                                          { return nil }
-func (m *mockAction) Task() *TaskConfig                                                        { return nil }
+func (m *mockAction) Name() string             { return m.name }
+func (m *mockAction) Description() string      { return m.description }
+func (m *mockAction) Inputs() interface{}      { return nil }
+func (m *mockAction) Middleware() []Middleware { return nil }
+func (m *mockAction) Web() *WebConfig          { return nil }
+func (m *mockAction) Task() *TaskConfig        { return nil }
 func (m *mockAction) Run(ctx context.Context, params interface{}, conn *Connection) (interface{}, error) {
 	return nil, nil
 }
 
 // Mock Server
 type mockServer struct {
-	name            string
+	name             string
 	initializeCalled bool
-	startCalled     bool
-	stopCalled      bool
-	shouldFailInit  bool
-	shouldFailStart bool
-	shouldFailStop  bool
+	startCalled      bool
+	stopCalled       bool
+	shouldFailInit   bool
+	shouldFailStart  bool
+	shouldFailStop   bool
 }
 
 func (m *mockServer) Name() string { return m.name }
@@ -64,18 +64,18 @@ func (m *mockServer) Stop() error {
 
 // Mock Initializer
 type mockInitializer struct {
-	name            string
-	priority        int
+	name             string
+	priority         int
 	initializeCalled bool
-	startCalled     bool
-	stopCalled      bool
-	shouldFailInit  bool
-	shouldFailStart bool
-	shouldFailStop  bool
+	startCalled      bool
+	stopCalled       bool
+	shouldFailInit   bool
+	shouldFailStart  bool
+	shouldFailStop   bool
 }
 
-func (m *mockInitializer) Name() string     { return m.name }
-func (m *mockInitializer) Priority() int    { return m.priority }
+func (m *mockInitializer) Name() string  { return m.name }
+func (m *mockInitializer) Priority() int { return m.priority }
 
 func (m *mockInitializer) Initialize(api *API) error {
 	m.initializeCalled = true

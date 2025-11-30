@@ -13,4 +13,3 @@ func DefaultSessionConfig() SessionConfig {
 		TTL:        86400, // 24 hours
 	}
 }
-

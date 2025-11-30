@@ -25,14 +25,11 @@ jobs:
                   go-version: ${{ matrix.go-version }}
                   cache-dependency-path: go.sum
 
-            - name: Download dependencies
-              run: go mod download
-
-            - name: Verify dependencies
-              run: go mod verify
+            - name: Install dependencies
+              run: make install
 
             - name: Run tests
-              run: go test -v -race -coverprofile=coverage.out ./...
+              run: make test-coverage
 
             - name: Upload coverage to Codecov
               uses: codecov/codecov-action@v4

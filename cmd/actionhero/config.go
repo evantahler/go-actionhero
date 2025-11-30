@@ -156,4 +156,3 @@ func maskPassword(password string) string {
 	}
 	return strings.Repeat("*", len(password))
 }
-

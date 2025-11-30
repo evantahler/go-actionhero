@@ -2,7 +2,7 @@ package api
 
 // MiddlewareResponse allows middleware to modify params and responses
 type MiddlewareResponse struct {
-	UpdatedParams  interface{}
+	UpdatedParams   interface{}
 	UpdatedResponse interface{}
 }
 
@@ -16,4 +16,3 @@ type Middleware interface {
 	// Can modify the response
 	RunAfter(params interface{}, conn *Connection) (*MiddlewareResponse, error)
 }
-

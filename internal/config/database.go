@@ -23,4 +23,3 @@ func DefaultDatabaseConfig() DatabaseConfig {
 		SSLMode:  "disable",
 	}
 }
-
