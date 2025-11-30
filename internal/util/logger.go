@@ -4,7 +4,15 @@ import (
 	"os"
 
 	"github.com/evantahler/go-actionhero/internal/config"
+	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
+)
+
+// ANSI color codes for terminal output
+const (
+	ColorBlue    = color.FgBlue
+	ColorMagenta = color.FgMagenta
+	ColorGray    = color.FgHiBlack
 )
 
 // Logger wraps logrus.Logger with our configuration
@@ -104,4 +112,26 @@ func (l *Logger) WithField(key string, value interface{}) *logrus.Entry {
 // WithFields adds multiple fields to the logger
 func (l *Logger) WithFields(fields logrus.Fields) *logrus.Entry {
 	return l.Logger.WithFields(fields)
+}
+
+// ColorizeIf colorizes text if colorization is enabled and bold is true,
+// or applies color without bold if bold is false
+func (l *Logger) ColorizeIf(text string, colorAttr color.Attribute, bold bool) string {
+	if !l.config.Colorize {
+		return text
+	}
+
+	c := color.New(colorAttr)
+	if bold {
+		c.Add(color.Bold)
+	}
+	return c.Sprint(text)
+}
+
+// Colorize applies color to text if colorization is enabled
+func (l *Logger) Colorize(text string, colorAttr color.Attribute) string {
+	if !l.config.Colorize {
+		return text
+	}
+	return color.New(colorAttr).Sprint(text)
 }

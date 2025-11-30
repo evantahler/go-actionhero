@@ -219,33 +219,39 @@ func (ws *WebServer) handleHTTP(w http.ResponseWriter, r *http.Request) {
 	// Find matching route
 	action, params, err := ws.matchRoute(r.Method, r.URL.Path)
 	if err != nil {
-		ws.sendError(w, http.StatusNotFound, "ROUTE_NOT_FOUND", err.Error())
+		// For 404s, still log via connection
+		conn := api.NewConnection("http", r.RemoteAddr, uuid.New().String(), nil)
+		result := conn.Act(r.Context(), ws.api, "", nil, r.Method, r.URL.String())
+		ws.sendError(w, http.StatusNotFound, "ROUTE_NOT_FOUND", result.Error.Error())
 		return
 	}
+
+	actionName := api.GetActionName(action)
 
 	// Parse request parameters
 	allParams, err := ws.parseRequest(r, params)
 	if err != nil {
+		conn := api.NewConnection("http", r.RemoteAddr, uuid.New().String(), nil)
+		conn.Act(r.Context(), ws.api, actionName, allParams, r.Method, r.URL.String())
 		ws.sendError(w, http.StatusBadRequest, "INVALID_REQUEST", err.Error())
 		return
 	}
 
-	// Create connection
+	// Create connection and execute action
 	conn := api.NewConnection("http", r.RemoteAddr, uuid.New().String(), nil)
+	result := conn.Act(r.Context(), ws.api, actionName, allParams, r.Method, r.URL.String())
 
-	// Execute action
-	response, err := ws.executeAction(r.Context(), action, allParams, conn)
-	if err != nil {
-		if typedErr, ok := err.(*util.TypedError); ok {
+	if result.Error != nil {
+		if typedErr, ok := result.Error.(*util.TypedError); ok {
 			ws.sendError(w, typedErr.HTTPStatus(), typedErr.Code(), typedErr.Message)
 		} else {
-			ws.sendError(w, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+			ws.sendError(w, http.StatusInternalServerError, "INTERNAL_ERROR", result.Error.Error())
 		}
 		return
 	}
 
 	// Send response
-	ws.sendSuccess(w, response)
+	ws.sendSuccess(w, result.Response)
 }
 
 // matchRoute finds the action that matches the given method and path
@@ -325,20 +331,6 @@ func (ws *WebServer) parseRequest(r *http.Request, pathParams map[string]string)
 	}
 
 	return params, nil
-}
-
-// executeAction executes an action with the given parameters
-func (ws *WebServer) executeAction(ctx context.Context, action api.Action, params map[string]interface{}, conn *api.Connection) (interface{}, error) {
-	// TODO: Implement input validation
-	// TODO: Implement middleware execution
-
-	// Execute action
-	response, err := action.Run(ctx, params, conn)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
 }
 
 // sendSuccess sends a successful JSON response
@@ -512,30 +504,24 @@ func (ws *WebServer) handleWebSocketAction(wsConn *wsConnection, msg map[string]
 		return
 	}
 
-	action, exists := ws.api.GetAction(actionName)
-	if !exists {
-		ws.sendWebSocketError(wsConn, "ACTION_NOT_FOUND", fmt.Sprintf("Action not found: %s", actionName))
-		return
-	}
-
 	params, ok := msg["params"].(map[string]interface{})
 	if !ok {
 		params = make(map[string]interface{})
 	}
 
-	// Execute action
-	response, err := ws.executeAction(context.Background(), action, params, wsConn.connection)
-	if err != nil {
-		if typedErr, ok := err.(*util.TypedError); ok {
+	// Execute action via Connection.Act()
+	result := wsConn.connection.Act(context.Background(), ws.api, actionName, params, "WEBSOCKET", "")
+	if result.Error != nil {
+		if typedErr, ok := result.Error.(*util.TypedError); ok {
 			ws.sendWebSocketError(wsConn, typedErr.Code(), typedErr.Message)
 		} else {
-			ws.sendWebSocketError(wsConn, "INTERNAL_ERROR", err.Error())
+			ws.sendWebSocketError(wsConn, "INTERNAL_ERROR", result.Error.Error())
 		}
 		return
 	}
 
 	// Send response
-	ws.sendWebSocketSuccess(wsConn, response)
+	ws.sendWebSocketSuccess(wsConn, result.Response)
 }
 
 // handleWebSocketSubscribe handles subscription requests

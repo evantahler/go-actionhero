@@ -376,8 +376,8 @@ func TestWebServer_ErrorHandling(t *testing.T) {
 
 func TestWebServer_CompileRoute(t *testing.T) {
 	tests := []struct {
-		pattern    string
-		path       string
+		pattern     string
+		path        string
 		shouldMatch bool
 		params      map[string]string
 	}{
