@@ -11,16 +11,18 @@ import (
 
 // Mock Action
 type mockAction struct {
-	name        string
-	description string
+	BaseAction
 }
 
-func (m *mockAction) Name() string             { return m.name }
-func (m *mockAction) Description() string      { return m.description }
-func (m *mockAction) Inputs() interface{}      { return nil }
-func (m *mockAction) Middleware() []Middleware { return nil }
-func (m *mockAction) Web() *WebConfig          { return nil }
-func (m *mockAction) Task() *TaskConfig        { return nil }
+func newMockAction(name, description string) *mockAction {
+	return &mockAction{
+		BaseAction: BaseAction{
+			ActionName:        name,
+			ActionDescription: description,
+		},
+	}
+}
+
 func (m *mockAction) Run(_ context.Context, _ interface{}, _ *Connection) (interface{}, error) {
 	return nil, nil
 }
@@ -131,7 +133,7 @@ func TestNew(t *testing.T) {
 func TestRegisterAction(t *testing.T) {
 	api := New(&config.Config{}, util.NewLogger(config.DefaultLoggerConfig()))
 
-	action := &mockAction{name: "test:action", description: "Test action"}
+	action := newMockAction("test:action", "Test action")
 
 	// Register action
 	err := api.RegisterAction(action)
@@ -164,8 +166,8 @@ func TestRegisterAction(t *testing.T) {
 func TestGetActions(t *testing.T) {
 	api := New(&config.Config{}, util.NewLogger(config.DefaultLoggerConfig()))
 
-	action1 := &mockAction{name: "action:one"}
-	action2 := &mockAction{name: "action:two"}
+	action1 := newMockAction("action:one", "Action one")
+	action2 := newMockAction("action:two", "Action two")
 
 	_ = api.RegisterAction(action1)
 	_ = api.RegisterAction(action2)

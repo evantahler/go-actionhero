@@ -77,7 +77,7 @@ func (a *API) RegisterAction(action Action) error {
 	a.actionsMu.Lock()
 	defer a.actionsMu.Unlock()
 
-	name := action.Name()
+	name := GetActionName(action)
 	if _, exists := a.actions[name]; exists {
 		return fmt.Errorf("action '%s' is already registered", name)
 	}

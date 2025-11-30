@@ -17,19 +17,26 @@ import (
 
 // testAction is a simple action for testing
 type testAction struct {
-	name        string
-	route       string
-	method      api.HTTPMethod
+	api.BaseAction
 	returnData  interface{}
 	returnError error
 }
 
-func (a *testAction) Name() string                                                             { return a.name }
-func (a *testAction) Description() string                                                      { return "test action" }
-func (a *testAction) Inputs() interface{}                                                      { return nil }
-func (a *testAction) Middleware() []api.Middleware                                             { return nil }
-func (a *testAction) Web() *api.WebConfig                                                      { return &api.WebConfig{Route: a.route, Method: a.method} }
-func (a *testAction) Task() *api.TaskConfig                                                    { return nil }
+func newTestAction(name, route string, method api.HTTPMethod, returnData interface{}, returnError error) *testAction {
+	return &testAction{
+		BaseAction: api.BaseAction{
+			ActionName:        name,
+			ActionDescription: "test action",
+			ActionWeb: &api.WebConfig{
+				Route:  route,
+				Method: method,
+			},
+		},
+		returnData:  returnData,
+		returnError: returnError,
+	}
+}
+
 func (a *testAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
 	if a.returnError != nil {
 		return nil, a.returnError
@@ -78,11 +85,7 @@ func TestWebServer_Initialize(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
 	// Register a test action
-	action := &testAction{
-		name:   "test:action",
-		route:  "/test",
-		method: api.HTTPMethodGET,
-	}
+	action := newTestAction("test:action", "/test", api.HTTPMethodGET, nil, nil)
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}
@@ -102,11 +105,7 @@ func TestWebServer_CORS(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
 	// Register a test action
-	action := &testAction{
-		name:   "test:cors",
-		route:  "/cors",
-		method: api.HTTPMethodGET,
-	}
+	action := newTestAction("test:cors", "/cors", api.HTTPMethodGET, nil, nil)
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}
@@ -159,10 +158,10 @@ func TestWebServer_RouteMatching(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
 	// Register test actions
-	actions := []*testAction{
-		{name: "test:get", route: "/test", method: api.HTTPMethodGET, returnData: "get"},
-		{name: "test:post", route: "/test", method: api.HTTPMethodPOST, returnData: "post"},
-		{name: "test:param", route: "/test/:id", method: api.HTTPMethodGET, returnData: "param"},
+	actions := []api.Action{
+		newTestAction("test:get", "/test", api.HTTPMethodGET, "get", nil),
+		newTestAction("test:post", "/test", api.HTTPMethodPOST, "post", nil),
+		newTestAction("test:param", "/test/:id", api.HTTPMethodGET, "param", nil),
 	}
 
 	for _, action := range actions {
@@ -224,11 +223,7 @@ func TestWebServer_PathParameters(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
 	// Register action with path parameters
-	action := &testAction{
-		name:   "test:params",
-		route:  "/users/:userId/posts/:postId",
-		method: api.HTTPMethodGET,
-	}
+	action := newTestAction("test:params", "/users/:userId/posts/:postId", api.HTTPMethodGET, nil, nil)
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}
@@ -268,11 +263,7 @@ func TestWebServer_PathParameters(t *testing.T) {
 func TestWebServer_QueryParameters(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
-	action := &testAction{
-		name:   "test:query",
-		route:  "/query",
-		method: api.HTTPMethodGET,
-	}
+	action := newTestAction("test:query", "/query", api.HTTPMethodGET, nil, nil)
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}
@@ -305,11 +296,7 @@ func TestWebServer_QueryParameters(t *testing.T) {
 func TestWebServer_JSONBody(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
-	action := &testAction{
-		name:   "test:json",
-		route:  "/json",
-		method: api.HTTPMethodPOST,
-	}
+	action := newTestAction("test:json", "/json", api.HTTPMethodPOST, nil, nil)
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}
@@ -352,12 +339,8 @@ func TestWebServer_ErrorHandling(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
 	// Register action that returns an error
-	action := &testAction{
-		name:        "test:error",
-		route:       "/error",
-		method:      api.HTTPMethodGET,
-		returnError: util.NewTypedError(util.ErrorTypeConnectionActionRun, "Something went wrong"),
-	}
+	action := newTestAction("test:error", "/error", api.HTTPMethodGET, nil,
+		util.NewTypedError(util.ErrorTypeConnectionActionRun, "Something went wrong"))
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}
@@ -439,12 +422,7 @@ func TestWebServer_WebSocket(t *testing.T) {
 	ws, apiInstance := setupTestServer(t)
 
 	// Register test action
-	action := &testAction{
-		name:       "test:ws",
-		route:      "/test",
-		method:     api.HTTPMethodGET,
-		returnData: "websocket response",
-	}
+	action := newTestAction("test:ws", "/test", api.HTTPMethodGET, "websocket response", nil)
 	if err := apiInstance.RegisterAction(action); err != nil {
 		t.Fatalf("Failed to register action: %v", err)
 	}

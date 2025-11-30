@@ -7,47 +7,48 @@ import (
 	"github.com/evantahler/go-actionhero/internal/api"
 )
 
+// StatusInput defines the input for the status action (no inputs required)
+type StatusInput struct{}
+
+// StatusOutput defines the output structure for the status action
+type StatusOutput struct {
+	Status    string `json:"status"`
+	Timestamp int64  `json:"timestamp"`
+	Uptime    string `json:"uptime"`
+}
+
 // StatusAction returns the server status
-type StatusAction struct{}
-
-// Name returns the action name
-func (a *StatusAction) Name() string {
-	return "status"
+type StatusAction struct {
+	api.BaseAction
 }
 
-// Description returns the action description
-func (a *StatusAction) Description() string {
-	return "Returns server status information"
-}
-
-// Inputs returns the input schema
-func (a *StatusAction) Inputs() interface{} {
-	return nil
-}
-
-// Middleware returns middleware for this action
-func (a *StatusAction) Middleware() []api.Middleware {
-	return nil
-}
-
-// Web returns the HTTP configuration
-func (a *StatusAction) Web() *api.WebConfig {
-	return &api.WebConfig{
-		Route:  "/status",
-		Method: api.HTTPMethodGET,
+// NewStatusAction creates and configures a new StatusAction
+func NewStatusAction() *StatusAction {
+	return &StatusAction{
+		BaseAction: api.BaseAction{
+			ActionName:        "status",
+			ActionDescription: "Return the status of the server",
+			ActionInputs:      StatusInput{},
+			ActionWeb: &api.WebConfig{
+				Route:  "/status",
+				Method: api.HTTPMethodGET,
+			},
+		},
 	}
 }
 
-// Task returns the task configuration
-func (a *StatusAction) Task() *api.TaskConfig {
-	return nil
-}
-
-// Run executes the action
+// Run executes the action with strong typing
 func (a *StatusAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
-	return map[string]interface{}{
-		"status":    "ok",
-		"timestamp": time.Now().Unix(),
-		"uptime":    "running",
+	// No need to marshal params since this action takes no input
+	var input StatusInput
+	if err := api.MarshalParams(params, &input); err != nil {
+		return nil, err
+	}
+
+	// Return strongly-typed output
+	return StatusOutput{
+		Status:    "ok",
+		Timestamp: time.Now().Unix(),
+		Uptime:    "running",
 	}, nil
 }

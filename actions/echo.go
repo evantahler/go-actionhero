@@ -6,44 +6,40 @@ import (
 	"github.com/evantahler/go-actionhero/internal/api"
 )
 
+// EchoInput defines the input for the echo action
+type EchoInput struct {
+	Message string `json:"message"`
+}
+
+// EchoOutput defines the output for the echo action
+type EchoOutput struct {
+	Received map[string]interface{} `json:"received"`
+}
+
 // EchoAction echoes back the parameters
-type EchoAction struct{}
-
-// Name returns the action name
-func (a *EchoAction) Name() string {
-	return "echo"
+type EchoAction struct {
+	api.BaseAction
 }
 
-// Description returns the action description
-func (a *EchoAction) Description() string {
-	return "Echoes back the parameters sent to it"
-}
-
-// Inputs returns the input schema
-func (a *EchoAction) Inputs() interface{} {
-	return nil
-}
-
-// Middleware returns middleware for this action
-func (a *EchoAction) Middleware() []api.Middleware {
-	return nil
-}
-
-// Web returns the HTTP configuration
-func (a *EchoAction) Web() *api.WebConfig {
-	return &api.WebConfig{
-		Route:  "/echo/:message",
-		Method: api.HTTPMethodGET,
+// NewEchoAction creates and configures a new EchoAction
+func NewEchoAction() *EchoAction {
+	return &EchoAction{
+		BaseAction: api.BaseAction{
+			ActionName:        "echo",
+			ActionDescription: "Echoes back the parameters sent to it",
+			ActionInputs:      EchoInput{},
+			ActionWeb: &api.WebConfig{
+				Route:  "/echo/:message",
+				Method: api.HTTPMethodGET,
+			},
+		},
 	}
-}
-
-// Task returns the task configuration
-func (a *EchoAction) Task() *api.TaskConfig {
-	return nil
 }
 
 // Run executes the action
 func (a *EchoAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
+	// For this action, we just echo back all params as-is
+	// (This maintains backward compatibility with existing tests)
 	return map[string]interface{}{
 		"received": params,
 	}, nil

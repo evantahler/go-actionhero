@@ -94,14 +94,14 @@ func (ws *WebServer) Initialize() error {
 	// Build routes from registered actions
 	actions := ws.api.GetActions()
 	for _, action := range actions {
-		webConfig := action.Web()
+		webConfig := api.GetActionWeb(action)
 		if webConfig == nil {
 			continue
 		}
 
 		pattern, paramNames, err := compileRoute(webConfig.Route)
 		if err != nil {
-			return fmt.Errorf("failed to compile route for action %s: %w", action.Name(), err)
+			return fmt.Errorf("failed to compile route for action %s: %w", api.GetActionName(action), err)
 		}
 
 		ws.routes = append(ws.routes, routeEntry{
@@ -111,7 +111,7 @@ func (ws *WebServer) Initialize() error {
 			action:     action,
 		})
 
-		ws.logger.Debugf("Registered route: %s %s -> %s", webConfig.Method, webConfig.Route, action.Name())
+		ws.logger.Debugf("Registered route: %s %s -> %s", webConfig.Method, webConfig.Route, api.GetActionName(action))
 	}
 
 	// Create HTTP server

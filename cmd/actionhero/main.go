@@ -154,18 +154,15 @@ func startServer() {
 	apiInstance := api.New(cfg, logger)
 
 	// Register actions
-	statusAction := &actions.StatusAction{}
-	if err := apiInstance.RegisterAction(statusAction); err != nil {
+	if err := apiInstance.RegisterAction(actions.NewStatusAction()); err != nil {
 		logger.Fatalf("Failed to register action: %v", err)
 	}
 
-	echoAction := &actions.EchoAction{}
-	if err := apiInstance.RegisterAction(echoAction); err != nil {
+	if err := apiInstance.RegisterAction(actions.NewEchoAction()); err != nil {
 		logger.Fatalf("Failed to register action: %v", err)
 	}
 
-	createUserAction := &actions.CreateUserAction{}
-	if err := apiInstance.RegisterAction(createUserAction); err != nil {
+	if err := apiInstance.RegisterAction(actions.NewCreateUserAction()); err != nil {
 		logger.Fatalf("Failed to register action: %v", err)
 	}
 
