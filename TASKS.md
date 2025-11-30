@@ -25,17 +25,17 @@
 ## Phase 2: HTTP & WebSocket Server
 
 ### HTTP Server
-- [ ] Implement basic HTTP server using net/http or gin/fiber
-- [ ] Implement regex-based route matching with path parameter extraction
-- [ ] Support RESTful HTTP methods (GET, POST, PUT, DELETE, PATCH, OPTIONS)
-- [ ] Implement request parsing (JSON body, form data, query params, path params)
-- [ ] Add CORS support with configurable origins, methods, and headers
-- [ ] Add optional static file serving support
+- [x] Implement basic HTTP server using net/http or gin/fiber
+- [x] Implement regex-based route matching with path parameter extraction
+- [x] Support RESTful HTTP methods (GET, POST, PUT, DELETE, PATCH, OPTIONS)
+- [x] Implement request parsing (JSON body, form data, query params, path params)
+- [x] Add CORS support with configurable origins, methods, and headers
+- [x] Add optional static file serving support
 
 ### WebSocket Server
-- [ ] Implement WebSocket upgrade handling from HTTP server
-- [ ] Handle WebSocket messages (action execution, subscribe/unsubscribe)
-- [ ] Implement WebSocket message broadcasting to subscribed connections
+- [x] Implement WebSocket upgrade handling from HTTP server
+- [x] Handle WebSocket messages (action execution, subscribe/unsubscribe)
+- [x] Implement WebSocket message broadcasting to subscribed connections
 
 ## Phase 3: Action System
 
@@ -162,7 +162,7 @@
 ---
 
 **Total Tasks: 70**
-**Completed: 13** (Phase 1 complete!)
+**Completed: 22** (Phase 1 & 2 complete!)
 
 **Estimated Timeline:** 10 weeks (as outlined in PLAN.md)
 

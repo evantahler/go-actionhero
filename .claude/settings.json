@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "make format && make lint"
+            "command": "make fmt && make lint"
           }
         ]
       }

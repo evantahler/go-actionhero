@@ -3,8 +3,13 @@ package main
 import (
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/evantahler/go-actionhero/actions"
+	"github.com/evantahler/go-actionhero/internal/api"
 	"github.com/evantahler/go-actionhero/internal/config"
+	"github.com/evantahler/go-actionhero/internal/servers"
 	"github.com/evantahler/go-actionhero/internal/util"
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
@@ -43,9 +48,7 @@ var startCmd = &cobra.Command{
 	Short: "Start the ActionHero server",
 	Long:  `Start the ActionHero server and begin accepting connections.`,
 	Run: func(_ *cobra.Command, _ []string) {
-		logger.Info("  Starting ActionHero server...")
-		// TODO: Start the server
-		logger.Warn("  Server start not yet implemented")
+		startServer()
 	},
 }
 
@@ -141,6 +144,62 @@ func showWelcome() {
 	logger.Info(color.New(color.FgCyan).Sprintf("  Logger Level: %s", cfg.Logger.Level))
 	logger.Info(color.New(color.FgCyan).Sprintf("  Web Server: %s:%d", cfg.Server.Web.Host, cfg.Server.Web.Port))
 	logger.Info(color.New(color.FgBlue, color.Bold).Sprint(headerLine))
+}
+
+// startServer initializes and starts the ActionHero server
+func startServer() {
+	showWelcome()
+
+	// Create API instance
+	apiInstance := api.New(cfg, logger)
+
+	// Register actions
+	statusAction := &actions.StatusAction{}
+	if err := apiInstance.RegisterAction(statusAction); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+
+	echoAction := &actions.EchoAction{}
+	if err := apiInstance.RegisterAction(echoAction); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+
+	createUserAction := &actions.CreateUserAction{}
+	if err := apiInstance.RegisterAction(createUserAction); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+
+	// Register web server
+	webServer := servers.NewWebServer(apiInstance)
+	apiInstance.RegisterServer(webServer)
+
+	// Initialize API
+	logger.Info("Initializing...")
+	if err := apiInstance.Initialize(); err != nil {
+		logger.Fatalf("Failed to initialize: %v", err)
+	}
+
+	// Start API
+	logger.Info("Starting...")
+	if err := apiInstance.Start(); err != nil {
+		logger.Fatalf("Failed to start: %v", err)
+	}
+
+	logger.Info(color.GreenString("Server is running! Press Ctrl+C to stop."))
+
+	// Wait for interrupt signal
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
+	// Graceful shutdown
+	logger.Info("Shutting down gracefully...")
+	if err := apiInstance.Stop(); err != nil {
+		logger.Errorf("Error during shutdown: %v", err)
+		os.Exit(1)
+	}
+
+	logger.Info(color.GreenString("Server stopped successfully"))
 }
 
 func main() {

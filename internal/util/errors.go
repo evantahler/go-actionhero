@@ -56,6 +56,35 @@ func (e *TypedError) Error() string {
 	return fmt.Sprintf("%s: %s", e.Type, e.Message)
 }
 
+// HTTPStatus returns the HTTP status code for this error type
+func (e *TypedError) HTTPStatus() int {
+	switch e.Type {
+	case ErrorTypeConnectionActionNotFound:
+		return 404 // Not Found
+	case ErrorTypeConnectionActionParamRequired, ErrorTypeConnectionActionParamValidation:
+		return 400 // Bad Request
+	case ErrorTypeConnectionSessionNotFound:
+		return 401 // Unauthorized
+	case ErrorTypeConnectionNotSubscribed:
+		return 400 // Bad Request
+	case ErrorTypeConnectionTypeNotFound:
+		return 400 // Bad Request
+	case ErrorTypeServerInitialization, ErrorTypeServerStart, ErrorTypeServerStop:
+		return 503 // Service Unavailable
+	case ErrorTypeActionValidation:
+		return 400 // Bad Request
+	case ErrorTypeConnectionActionRun:
+		return 500 // Internal Server Error
+	default:
+		return 500 // Internal Server Error
+	}
+}
+
+// Code returns the error code as a string
+func (e *TypedError) Code() string {
+	return string(e.Type)
+}
+
 // NewTypedError creates a new TypedError
 func NewTypedError(typ ErrorType, message string, opts ...TypedErrorOption) *TypedError {
 	err := &TypedError{
