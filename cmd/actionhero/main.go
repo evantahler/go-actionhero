@@ -147,14 +147,14 @@ func addActionCommand(action api.Action) {
 					case reflect.String:
 						if isRequired {
 							cmd.Flags().String(flagName, "", description+" (required)")
-							cmd.MarkFlagRequired(flagName)
+							_ = cmd.MarkFlagRequired(flagName)
 						} else {
 							cmd.Flags().String(flagName, "", description)
 						}
 					case reflect.Int, reflect.Int64:
 						if isRequired {
 							cmd.Flags().Int(flagName, 0, description+" (required)")
-							cmd.MarkFlagRequired(flagName)
+							_ = cmd.MarkFlagRequired(flagName)
 						} else {
 							cmd.Flags().Int(flagName, 0, description)
 						}

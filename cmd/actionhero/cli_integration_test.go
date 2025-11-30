@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	// Cleanup
-	os.Remove(binaryName)
+	_ = os.Remove(binaryName)
 	os.Exit(code)
 }
 

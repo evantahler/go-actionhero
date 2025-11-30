@@ -176,7 +176,9 @@ func TestConnection_Act_LoggingError(t *testing.T) {
 		},
 		shouldError: true,
 	}
-	apiInstance.RegisterAction(action)
+	if err := apiInstance.RegisterAction(action); err != nil {
+		t.Fatalf("Failed to register action: %v", err)
+	}
 
 	// Create connection
 	conn := NewConnection("http", "127.0.0.1", "test-id", nil)

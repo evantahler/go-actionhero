@@ -280,7 +280,9 @@ func TestWebServer_QueryParameters(t *testing.T) {
 
 	// Check response
 	var response map[string]interface{}
-	json.NewDecoder(w.Body).Decode(&response)
+	if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
 
 	data := response["data"].(map[string]interface{})
 	params := data["params"].(map[string]interface{})
@@ -322,7 +324,9 @@ func TestWebServer_JSONBody(t *testing.T) {
 
 	// Check response
 	var response map[string]interface{}
-	json.NewDecoder(w.Body).Decode(&response)
+	if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
 
 	data := response["data"].(map[string]interface{})
 	params := data["params"].(map[string]interface{})
@@ -362,7 +366,9 @@ func TestWebServer_ErrorHandling(t *testing.T) {
 	}
 
 	var response map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&response)
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
 
 	if response["success"].(bool) {
 		t.Errorf("Expected success=false")
@@ -435,7 +441,7 @@ func TestWebServer_WebSocket(t *testing.T) {
 	if err := ws.Start(); err != nil {
 		t.Fatalf("Failed to start server: %v", err)
 	}
-	defer ws.Stop()
+	defer func() { _ = ws.Stop() }()
 
 	// Give server time to start
 	time.Sleep(100 * time.Millisecond)
@@ -446,7 +452,7 @@ func TestWebServer_WebSocket(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to WebSocket: %v", err)
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// Send action request
 	request := map[string]interface{}{
@@ -486,7 +492,7 @@ func TestWebServer_WebSocketSubscription(t *testing.T) {
 	if err := ws.Start(); err != nil {
 		t.Fatalf("Failed to start server: %v", err)
 	}
-	defer ws.Stop()
+	defer func() { _ = ws.Stop() }()
 
 	// Give server time to start
 	time.Sleep(100 * time.Millisecond)
@@ -497,7 +503,7 @@ func TestWebServer_WebSocketSubscription(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to WebSocket: %v", err)
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// Subscribe to channel
 	request := map[string]interface{}{
@@ -531,7 +537,9 @@ func TestWebServer_WebSocketSubscription(t *testing.T) {
 
 	// Read broadcast message
 	var broadcast map[string]interface{}
-	conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+	if err := conn.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
+		t.Fatalf("Failed to set read deadline: %v", err)
+	}
 	if err := conn.ReadJSON(&broadcast); err != nil {
 		t.Fatalf("Failed to read broadcast: %v", err)
 	}
