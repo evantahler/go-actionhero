@@ -7,8 +7,33 @@ import (
 	"sync"
 	"time"
 
+	"github.com/evantahler/go-actionhero/internal/config"
 	"github.com/evantahler/go-actionhero/internal/util"
 )
+
+// Context keys for passing API and Config
+type ContextKey string
+
+const (
+	ContextKeyAPI    ContextKey = "api"
+	ContextKeyConfig ContextKey = "config"
+)
+
+// APIFromContext retrieves the API instance from context
+func APIFromContext(ctx context.Context) *API {
+	if api, ok := ctx.Value(ContextKeyAPI).(*API); ok {
+		return api
+	}
+	return nil
+}
+
+// ConfigFromContext retrieves the Config from context
+func ConfigFromContext(ctx context.Context) *config.Config {
+	if cfg, ok := ctx.Value(ContextKeyConfig).(*config.Config); ok {
+		return cfg
+	}
+	return nil
+}
 
 // SessionData represents session information
 type SessionData struct {
@@ -113,6 +138,10 @@ func (c *Connection) Act(
 		err = fmt.Errorf("action not found: %s", actionName)
 		return ActResult{Response: nil, Error: err}
 	}
+
+	// Store API instance and config in context for actions that need them
+	ctx = context.WithValue(ctx, ContextKeyAPI, api)
+	ctx = context.WithValue(ctx, ContextKeyConfig, api.Config)
 
 	// Execute the action
 	response, err = action.Run(ctx, params, c)

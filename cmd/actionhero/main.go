@@ -96,11 +96,13 @@ func init() {
 }
 
 // registerActionCommands adds each action as a CLI command
+// TOSO: can we autoload these?
 func registerActionCommands() {
 	actionsList := []api.Action{
 		actions.NewStatusAction(),
 		actions.NewEchoAction(),
 		actions.NewCreateUserAction(),
+		actions.NewSwaggerAction(),
 	}
 
 	for _, action := range actionsList {
@@ -185,6 +187,9 @@ func runActionViaCLI(cmd *cobra.Command, action api.Action) {
 		logger.Fatalf("Failed to register action: %v", err)
 	}
 	if err := apiInstance.RegisterAction(actions.NewCreateUserAction()); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+	if err := apiInstance.RegisterAction(actions.NewSwaggerAction()); err != nil {
 		logger.Fatalf("Failed to register action: %v", err)
 	}
 
@@ -331,6 +336,10 @@ func startServer() {
 	}
 
 	if err := apiInstance.RegisterAction(actions.NewCreateUserAction()); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+
+	if err := apiInstance.RegisterAction(actions.NewSwaggerAction()); err != nil {
 		logger.Fatalf("Failed to register action: %v", err)
 	}
 
