@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"os/signal"
+	"os/user"
+	"reflect"
 	"syscall"
 
 	"github.com/evantahler/go-actionhero/actions"
@@ -14,6 +19,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var (
@@ -84,6 +90,168 @@ func init() {
 	// Add subcommands
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(configCmd)
+
+	// Register action commands
+	registerActionCommands()
+}
+
+// registerActionCommands adds each action as a CLI command
+func registerActionCommands() {
+	actionsList := []api.Action{
+		actions.NewStatusAction(),
+		actions.NewEchoAction(),
+		actions.NewCreateUserAction(),
+	}
+
+	for _, action := range actionsList {
+		addActionCommand(action)
+	}
+}
+
+// addActionCommand creates a CLI command for an action
+func addActionCommand(action api.Action) {
+	actionName := api.GetActionName(action)
+	actionDesc := api.GetActionDescription(action)
+
+	cmd := &cobra.Command{
+		Use:   actionName,
+		Short: fmt.Sprintf("Run action: %s", actionName),
+		Long: fmt.Sprintf("Run action: %s\n\n%s\n\nInputs should be passed as flags. The server will be initialized and started, and the action will be executed via a CLI connection.",
+			actionName, actionDesc),
+		Run: func(cmd *cobra.Command, args []string) {
+			runActionViaCLI(cmd, action)
+		},
+	}
+
+	// Add flags for action inputs
+	inputs := api.GetActionInputs(action)
+	if inputs != nil {
+		inputType := reflect.TypeOf(inputs)
+		if inputType.Kind() == reflect.Struct {
+			for i := 0; i < inputType.NumField(); i++ {
+				field := inputType.Field(i)
+				jsonTag := field.Tag.Get("json")
+				if jsonTag != "" && jsonTag != "-" {
+					// Get the field name from JSON tag
+					flagName := jsonTag
+
+					// Check if required (simplified - could be enhanced with validate tag parsing)
+					validateTag := field.Tag.Get("validate")
+					isRequired := validateTag != "" && (validateTag == "required" ||
+						len(validateTag) > 8 && validateTag[:8] == "required")
+
+					description := fmt.Sprintf("%s parameter", flagName)
+
+					// Add the flag based on type
+					switch field.Type.Kind() {
+					case reflect.String:
+						if isRequired {
+							cmd.Flags().String(flagName, "", description+" (required)")
+							cmd.MarkFlagRequired(flagName)
+						} else {
+							cmd.Flags().String(flagName, "", description)
+						}
+					case reflect.Int, reflect.Int64:
+						if isRequired {
+							cmd.Flags().Int(flagName, 0, description+" (required)")
+							cmd.MarkFlagRequired(flagName)
+						} else {
+							cmd.Flags().Int(flagName, 0, description)
+						}
+					case reflect.Bool:
+						cmd.Flags().Bool(flagName, false, description)
+					default:
+						// For other types, use string and let action parse it
+						cmd.Flags().String(flagName, "", description)
+					}
+				}
+			}
+		}
+	}
+
+	rootCmd.AddCommand(cmd)
+}
+
+// runActionViaCLI executes an action via CLI connection
+func runActionViaCLI(cmd *cobra.Command, action api.Action) {
+	// Create API instance
+	apiInstance := api.New(cfg, logger)
+
+	// Register all actions
+	if err := apiInstance.RegisterAction(actions.NewStatusAction()); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+	if err := apiInstance.RegisterAction(actions.NewEchoAction()); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+	if err := apiInstance.RegisterAction(actions.NewCreateUserAction()); err != nil {
+		logger.Fatalf("Failed to register action: %v", err)
+	}
+
+	// Initialize API (but don't start servers)
+	if err := apiInstance.Initialize(); err != nil {
+		logger.Fatalf("Failed to initialize: %v", err)
+	}
+
+	// Get current user for connection ID
+	currentUser, _ := user.Current()
+	username := "cli"
+	if currentUser != nil {
+		username = currentUser.Username
+	}
+	connectionID := fmt.Sprintf("cli:%s", username)
+
+	// Create CLI connection
+	conn := api.NewConnection("cli", connectionID, connectionID, nil)
+
+	// Collect parameters from flags
+	params := make(map[string]interface{})
+	cmd.Flags().Visit(func(flag *pflag.Flag) {
+		// Skip global flags
+		if flag.Name == "no-color" || flag.Name == "no-timestamp" || flag.Name == "quiet" {
+			return
+		}
+		params[flag.Name] = flag.Value.String()
+	})
+
+	// Execute action
+	actionName := api.GetActionName(action)
+	result := conn.Act(context.Background(), apiInstance, actionName, params, "CLI", "")
+
+	// Prepare output
+	output := map[string]interface{}{
+		"response": result.Response,
+	}
+	exitCode := 0
+
+	if result.Error != nil {
+		exitCode = 1
+		if typedErr, ok := result.Error.(*util.TypedError); ok {
+			output["error"] = map[string]interface{}{
+				"message": typedErr.Message,
+				"code":    typedErr.Code(),
+				"type":    typedErr.Type,
+			}
+		} else {
+			output["error"] = map[string]interface{}{
+				"message": result.Error.Error(),
+			}
+		}
+	}
+
+	// Output JSON to stdout (or stderr if error)
+	jsonOutput, err := json.MarshalIndent(output, "", "  ")
+	if err != nil {
+		logger.Fatalf("Failed to marshal output: %v", err)
+	}
+
+	if exitCode == 0 {
+		fmt.Println(string(jsonOutput))
+	} else {
+		fmt.Fprintln(os.Stderr, string(jsonOutput))
+	}
+
+	os.Exit(exitCode)
 }
 
 // loadConfigAndInitLogger loads configuration and initializes the logger
