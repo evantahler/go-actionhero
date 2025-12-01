@@ -150,17 +150,25 @@ func (ws *WebServer) Start() error {
 	ws.wg.Add(1)
 	go ws.handleBroadcasts()
 
-	// Start HTTP server in goroutine
+	// Start HTTP server in goroutine, but capture startup errors
+	errChan := make(chan error, 1)
 	ws.wg.Add(1)
 	go func() {
 		defer ws.wg.Done()
 		if err := ws.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			ws.logger.Errorf("Web server error: %v", err)
+			errChan <- err
 		}
 	}()
 
-	ws.logger.Infof("Web server started successfully")
-	return nil
+	// Wait briefly to catch immediate startup errors (e.g., port already in use)
+	select {
+	case err := <-errChan:
+		return fmt.Errorf("failed to start web server: %w", err)
+	case <-time.After(100 * time.Millisecond):
+		// Server started successfully
+		ws.logger.Infof("Web server started successfully")
+		return nil
+	}
 }
 
 // Stop stops the web server gracefully
