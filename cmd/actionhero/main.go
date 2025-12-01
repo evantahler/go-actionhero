@@ -96,16 +96,9 @@ func init() {
 }
 
 // registerActionCommands adds each action as a CLI command
-// TOSO: can we autoload these?
 func registerActionCommands() {
-	actionsList := []api.Action{
-		actions.NewStatusAction(),
-		actions.NewEchoAction(),
-		actions.NewCreateUserAction(),
-		actions.NewSwaggerAction(),
-	}
-
-	for _, action := range actionsList {
+	// Get all auto-registered actions
+	for _, action := range actions.GetAll() {
 		addActionCommand(action)
 	}
 }
@@ -180,17 +173,10 @@ func runActionViaCLI(cmd *cobra.Command, action api.Action) {
 	apiInstance := api.New(cfg, logger)
 
 	// Register all actions
-	if err := apiInstance.RegisterAction(actions.NewStatusAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
-	}
-	if err := apiInstance.RegisterAction(actions.NewEchoAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
-	}
-	if err := apiInstance.RegisterAction(actions.NewCreateUserAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
-	}
-	if err := apiInstance.RegisterAction(actions.NewSwaggerAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
+	for _, action := range actions.GetAll() {
+		if err := apiInstance.RegisterAction(action); err != nil {
+			logger.Fatalf("Failed to register action: %v", err)
+		}
 	}
 
 	// Initialize API (but don't start servers)
@@ -326,21 +312,11 @@ func startServer() {
 	// Create API instance
 	apiInstance := api.New(cfg, logger)
 
-	// Register actions
-	if err := apiInstance.RegisterAction(actions.NewStatusAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
-	}
-
-	if err := apiInstance.RegisterAction(actions.NewEchoAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
-	}
-
-	if err := apiInstance.RegisterAction(actions.NewCreateUserAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
-	}
-
-	if err := apiInstance.RegisterAction(actions.NewSwaggerAction()); err != nil {
-		logger.Fatalf("Failed to register action: %v", err)
+	// Register all actions
+	for _, action := range actions.GetAll() {
+		if err := apiInstance.RegisterAction(action); err != nil {
+			logger.Fatalf("Failed to register action: %v", err)
+		}
 	}
 
 	// Register web server

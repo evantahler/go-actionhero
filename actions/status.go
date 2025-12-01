@@ -37,6 +37,10 @@ func NewStatusAction() *StatusAction {
 	}
 }
 
+func init() {
+	Register(func() api.Action { return NewStatusAction() })
+}
+
 // Run executes the action with strong typing
 func (a *StatusAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
 	// No need to marshal params since this action takes no input

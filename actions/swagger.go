@@ -31,6 +31,10 @@ func NewSwaggerAction() *SwaggerAction {
 	}
 }
 
+func init() {
+	Register(func() api.Action { return NewSwaggerAction() })
+}
+
 // Run executes the swagger action
 func (a *SwaggerAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
 	apiInstance := api.APIFromContext(ctx)

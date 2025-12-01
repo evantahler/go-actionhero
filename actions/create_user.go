@@ -41,6 +41,10 @@ func NewCreateUserAction() *CreateUserAction {
 	}
 }
 
+func init() {
+	Register(func() api.Action { return NewCreateUserAction() })
+}
+
 // Run executes the action with strong typing
 func (a *CreateUserAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
 	// Marshal params to strongly-typed input

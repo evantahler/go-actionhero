@@ -36,6 +36,10 @@ func NewEchoAction() *EchoAction {
 	}
 }
 
+func init() {
+	Register(func() api.Action { return NewEchoAction() })
+}
+
 // Run executes the action
 func (a *EchoAction) Run(ctx context.Context, params interface{}, conn *api.Connection) (interface{}, error) {
 	// For this action, we just echo back all params as-is
